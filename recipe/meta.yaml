@@ -1,5 +1,5 @@
 {% set name = "smac" %}
-{% set version = "2.1.0" %}
+{% set version = "1.2" %}
 
 
 package:
@@ -8,11 +8,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: af9d3bffd4d8d233ecc872a8c0f7c245043d41340a7790091165d363b2f7fe63
+  sha256: f98e2c6baa91dd275ca4f0fedb47a0d38fe5875564a0805b6b1c6b8866561c24
+  skip: True  # [py>=37]
 
 build:
   number: 0
-  noarch: python
   entry_points:
     - smac = smac.smac_cli:cmd_line_call
   script: {{ PYTHON }} -m pip install . -vv
@@ -20,29 +20,33 @@ build:
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python
+    - wheel
+    - setuptools
   run:
-    - configspace >=0.6.1
-    - dask-core
-    - dask-jobqueue
-    - regex
-    - numpy >=1.23.3
-    - scipy >=1.9.2
+    - configspace >=0.4.14,<0.5
+    - numpy >=1.7.1
+    - scipy >=1.7.0
     - psutil
-    - pynisher >=1.0.0
-    - ConfigSpace >=0.6.1
+    - pynisher >=0.4.1
     - joblib
-    - scikit-learn >=1.1.2
-    - pyrfr >=0.9.0
+    - scikit-learn >=0.22.0
     - dask
-    - emcee >=3.0.0
-    - python >=3.8
-    - pyyaml
-    - __linux
+    - python
+    - pyrfr >=0.8.0
+
 
 test:
+  source_files:
+    - test
   imports:
     - smac
+  commands:
+    - pip check
+    - pytest -v .
+  requires:
+   - pytest
+   - pip
 
 
 about:
@@ -56,7 +60,7 @@ about:
     performs better.
   license: BSD-3-Clause
   license_family: BSD
-  license_file: LICENSE.txt
+  license_file: LICENSE
   doc_url: https://automl.github.io/SMAC3/
   dev_url: https://github.com/automl/SMAC3
 
