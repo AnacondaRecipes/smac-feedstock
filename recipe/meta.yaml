@@ -9,7 +9,7 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: f98e2c6baa91dd275ca4f0fedb47a0d38fe5875564a0805b6b1c6b8866561c24
-  skip: True  # [py>=37]
+  #skip: True  # [py>=37]
 
 build:
   number: 0
@@ -34,6 +34,7 @@ requirements:
     - dask
     - python
     - pyrfr >=0.8.0
+    - emcee >=3.0.0
 
 
 test:
