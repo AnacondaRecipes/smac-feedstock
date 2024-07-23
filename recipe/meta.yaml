@@ -29,6 +29,9 @@ build:
     - smac = smac.smac_cli:cmd_line_call
 
 requirements:
+    build:
+      - patch     # [not win]
+      - m2-patch  # [win]
   host:
     - python
     - pip
