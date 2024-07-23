@@ -1,57 +1,80 @@
 {% set name = "smac" %}
 {% set version = "1.2" %}
-
+{% set git_version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f98e2c6baa91dd275ca4f0fedb47a0d38fe5875564a0805b6b1c6b8866561c24
-  #skip: True  # [py>=37]
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: f98e2c6baa91dd275ca4f0fedb47a0d38fe5875564a0805b6b1c6b8866561c24
+    patches:
+      - patches/0001-fix-numpy-deprecated-float-to-float64.patch
+      - patches/0002-fix-numpy-deprecated-int-to-int64.patch
+      - patches/0003-n_restarts_optimizer-must-be-positive.patch
+  # use GH release for missing data files
+  - url: https://github.com/automl/SMAC3/archive/refs/tags/v{{ git_version }}.tar.gz
+    sha256: 72d8874ded51abeb0a775dc7056548b0c4a5d82ea74edbb066ddde633437a5ca
+    patches:
+      # same patch here because a test file is patched as well
+      - patches/0002-fix-numpy-deprecated-int-to-int64.patch
+    folder: gh_src
 
 build:
   number: 0
+  skip: True  # [py<38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - smac = smac.smac_cli:cmd_line_call
-  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
-    - pip
     - python
-    - wheel
+    - pip
     - setuptools
+    - wheel
   run:
-    - configspace >=0.4.14,<0.5
+    - python
     - numpy >=1.7.1
     - scipy >=1.7.0
     - psutil
     - pynisher >=0.4.1
+    - configspace >=0.4.14,<0.5
     - joblib
     - scikit-learn >=0.22.0
-    - dask
-    - python
     - pyrfr >=0.8.0
+    - dask-core
+    - distributed
     - emcee >=3.0.0
 
+{% set tests_to_ignore = "" %}
+# ignore test_cli because they require examples folder and run scripts
+{% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_cli/test_restore_state.py" %}
+# ignore test_psmac_facade.py and test_hydra_facade.py because they
+# use a non existing data file (spear_hydra_test_scenario.txt).
+{% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_facade/test_hydra_facade.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_facade/test_psmac_facade.py" %}
+
+# skip test_gp_on_sklearn_data because using load_boston deprecated in sklearn
+{% set tests_to_skip = "" %}
+{% set tests_to_skip = tests_to_skip + "test_rf_on_sklearn_data or test_gp_on_sklearn_data" %}
 
 test:
   source_files:
-    - test
+    - gh_src/test
   imports:
     - smac
+  requires:
+    - pip
+    - pytest
+    - matplotlib-base
   commands:
     - pip check
-    - pytest -v .
-  requires:
-   - pytest
-   - pip
-
+    - pytest -v gh_src/test  {{ tests_to_ignore }} -k "not ({{ tests_to_skip }})"
 
 about:
-  home: https://www.automl.org/automated-algorithm-design/algorithm-configuration/smac/
+  home: https://www.automl.org/hpo-overview/hpo-tools/smac/
   summary: Sequential Model-based Algorithm Configuration
   description: |
     SMAC is a tool for algorithm configuration to optimize the parameters of arbitrary

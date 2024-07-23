@@ -1,0 +1,39 @@
+From 17735a7c33aa59ff2e430dde9e9686110d6db3f4 Mon Sep 17 00:00:00 2001
+From: Lorenzo Pirritano <lpirritano@anaconda.com>
+Date: Tue, 23 Jul 2024 11:33:44 +0200
+Subject: [PATCH 3/3] n_restarts_optimizer must be positive
+
+---
+ smac/epm/gaussian_process.py      | 2 +-
+ smac/epm/gaussian_process_mcmc.py | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/smac/epm/gaussian_process.py b/smac/epm/gaussian_process.py
+index 81e1dcd..5efb5c1 100644
+--- a/smac/epm/gaussian_process.py
++++ b/smac/epm/gaussian_process.py
+@@ -144,7 +144,7 @@ class GaussianProcess(BaseModel):
+             kernel=self.kernel,
+             normalize_y=False,
+             optimizer=None,
+-            n_restarts_optimizer=-1,  # Do not use scikit-learn's optimization routine
++            n_restarts_optimizer=0,  # Do not use scikit-learn's optimization routine
+             alpha=0,  # Governed by the kernel
+             random_state=self.rng,
+         )
+diff --git a/smac/epm/gaussian_process_mcmc.py b/smac/epm/gaussian_process_mcmc.py
+index c77f198..038e07b 100644
+--- a/smac/epm/gaussian_process_mcmc.py
++++ b/smac/epm/gaussian_process_mcmc.py
+@@ -292,7 +292,7 @@ class GaussianProcessMCMC(BaseModel):
+             kernel=self.kernel,
+             normalize_y=False,
+             optimizer=None,
+-            n_restarts_optimizer=-1,  # Do not use scikit-learn's optimization routine
++            n_restarts_optimizer=0,  # Do not use scikit-learn's optimization routine
+             alpha=0,  # Governed by the kernel
+         )
+ 
+-- 
+2.39.1
+

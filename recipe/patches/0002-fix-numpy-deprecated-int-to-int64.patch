@@ -1,0 +1,46 @@
+From 0e5997ecfe6825b43a53b3354ee2264358eda69f Mon Sep 17 00:00:00 2001
+From: Lorenzo Pirritano <lpirritano@anaconda.com>
+Date: Tue, 23 Jul 2024 11:10:54 +0200
+Subject: [PATCH 2/3] fix numpy deprecated int to int64
+
+---
+ smac/initial_design/initial_design.py | 4 ++--
+ test/test_epm/test_gp.py              | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/smac/initial_design/initial_design.py b/smac/initial_design/initial_design.py
+index 2ad4330..bc9c47e 100644
+--- a/smac/initial_design/initial_design.py
++++ b/smac/initial_design/initial_design.py
+@@ -130,11 +130,11 @@ class InitialDesign:
+             elif isinstance(param, CategoricalHyperparameter):
+                 v_design = design[:, idx]
+                 v_design[v_design == 1] = 1 - 10**-10
+-                design[:, idx] = np.array(v_design * len(param.choices), dtype=np.int)
++                design[:, idx] = np.array(v_design * len(param.choices), dtype=np.int64)
+             elif isinstance(param, OrdinalHyperparameter):
+                 v_design = design[:, idx]
+                 v_design[v_design == 1] = 1 - 10**-10
+-                design[:, idx] = np.array(v_design * len(param.sequence), dtype=np.int)
++                design[:, idx] = np.array(v_design * len(param.sequence), dtype=np.int64)
+             else:
+                 raise ValueError("Hyperparameter not supported in LHD")
+ 
+diff --git a/test/test_epm/test_gp.py b/test/test_epm/test_gp.py
+index b1386a0..8bee503 100644
+--- a/test/test_epm/test_gp.py
++++ b/test/test_epm/test_gp.py
+@@ -78,8 +78,8 @@ def get_cat_data(rs):
+ def get_mixed_gp(cat_dims, cont_dims, rs, noise=1e-3, normalize_y=True):
+     from smac.epm.gp_kernels import ConstantKernel, Matern, WhiteKernel, HammingKernel
+ 
+-    cat_dims = np.array(cat_dims, dtype=np.int)
+-    cont_dims = np.array(cont_dims, dtype=np.int)
++    cat_dims = np.array(cat_dims, dtype=np.int64)
++    cont_dims = np.array(cont_dims, dtype=np.int64)
+     n_dimensions = len(cat_dims) + len(cont_dims)
+     cov_amp = ConstantKernel(
+         2.0,
+-- 
+2.39.1
+
