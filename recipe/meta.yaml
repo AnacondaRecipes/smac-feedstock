@@ -77,6 +77,8 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_lnprob_and_grad_scalar" %}  # [linux and x86_64]
 # skip tests for numerical appoximation problems on osx-64
 {% set tests_to_skip = tests_to_skip + " or test_facades" %}  # [osx and x86_64]
+# skip tests that are way too slow on osx-arm64
+{% set tests_to_skip = tests_to_skip + " or test_AC or test_facades" %}  # [arm64]
 
 test:
   source_files:
