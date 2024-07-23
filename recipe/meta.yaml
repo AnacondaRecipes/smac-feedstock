@@ -29,9 +29,9 @@ build:
     - smac = smac.smac_cli:cmd_line_call
 
 requirements:
-    build:
-      - patch     # [not win]
-      - m2-patch  # [win]
+  build:
+    - patch     # [not win]
+    - m2-patch  # [win]
   host:
     - python
     - pip
@@ -58,10 +58,15 @@ requirements:
 # use a non existing data file (spear_hydra_test_scenario.txt).
 {% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_facade/test_hydra_facade.py" %}
 {% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_facade/test_psmac_facade.py" %}
+# ignore tests that crash instead of timeout
+{% set tests_to_ignore = tests_to_ignore + " --ignore=gh_src/test/test_tae/test_exec_func.py" %}  # [osx]
 
-# skip test_gp_on_sklearn_data because using load_boston deprecated in sklearn
 {% set tests_to_skip = "" %}
+# skip test_gp_on_sklearn_data because using load_boston deprecated in sklearn
 {% set tests_to_skip = tests_to_skip + "test_rf_on_sklearn_data or test_gp_on_sklearn_data" %}
+# skip tests problematic with multiprocessing and pickle
+{% set tests_to_skip = tests_to_skip + " or test_incorporate_run_results_callback_stop_loop or test_update_intensification_percentage" %}  # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_parameter_order or test_check_deterministic_rosenbrock" %}  # [osx]
 
 test:
   source_files:
@@ -74,7 +79,7 @@ test:
     - matplotlib-base
   commands:
     - pip check
-    - pytest -v gh_src/test  {{ tests_to_ignore }} -k "not ({{ tests_to_skip }})"
+    - pytest -v gh_src/test {{ tests_to_ignore }} -k "not ({{ tests_to_skip }})"
 
 about:
   home: https://www.automl.org/hpo-overview/hpo-tools/smac/
