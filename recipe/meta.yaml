@@ -87,7 +87,7 @@ test:
     - smac
   requires:
     - pip
-    - pytest
+    - pytest >=4.6
     - matplotlib-base
   commands:
     - pip check
