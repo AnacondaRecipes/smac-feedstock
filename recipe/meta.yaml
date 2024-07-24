@@ -24,7 +24,7 @@ source:
 build:
   number: 0
   # skip win because pynisher 0.6.4 unavailable
-  skip: True  # [py<38 or win]
+  skip: True  # [py<37 or win]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - smac = smac.smac_cli:cmd_line_call
