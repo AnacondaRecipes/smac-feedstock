@@ -1,6 +1,2 @@
 upload_channels:
   - sfe1ed40
-
-channels:
-  - https://staging.continuum.io/prefect/fs/configspace-feedstock/pr3/c209225
-  - https://staging.continuum.io/prefect/fs/emcee-feedstock/pr4/8d82305
